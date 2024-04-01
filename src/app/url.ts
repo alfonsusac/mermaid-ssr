@@ -1,5 +1,5 @@
 export function getDomain() {
-  return process.env.VERCEL_URL
+  return process.env.NEXT_PUBLIC_VERCEL_URL	
     ? "https://mermaid-ssr.vercel.app"
     : "http://localhost:3010"
 }
