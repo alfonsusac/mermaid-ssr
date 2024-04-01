@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { Browser, Page } from "puppeteer-core"
 import { getDomain } from "../url"
 import { Mermaid } from "mermaid"
+// @ts-ignore
+import mermaidHTML from "./mermaid.html" 
 
 const temp = {
   page: undefined as Page | undefined
@@ -9,6 +11,8 @@ const temp = {
 
 
 export async function GET(request: NextRequest) {
+  // console.log(mermaidHTML)
+
   const code = request.nextUrl.searchParams.get('code')
   if (!code) return NextResponse.json({ status: "no code provided" })
   const backgroundColor = request.nextUrl.searchParams.get('b')
@@ -103,8 +107,9 @@ async function initializePuppeteer() {
       }
     })
     page.setDefaultTimeout(5000)
-    console.log(getDomain() + '/mermaid.html')
-    await page.goto(getDomain() + '/mermaid.html')
+    // console.log(getDomain() + '/mermaid.html')
+    // await page.goto(getDomain() + '/mermaid.html')
+    page.setContent(mermaidHTML)
     await page.waitForSelector('#container')
     temp.page = page
     console.log("Page initialized.")
