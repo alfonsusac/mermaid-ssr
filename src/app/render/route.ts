@@ -1,12 +1,13 @@
 import { renderMermaid } from "@mermaid-js/mermaid-cli"
 import { NextRequest, NextResponse } from "next/server"
-import puppeteer, { Browser } from "puppeteer"
-import chromium from "@sparticuz/chromium-min"
+import chromium from "@sparticuz/chromium"
+import puppeteer from "puppeteer-core"
+// import puppeteer from "puppeteer"
 
 
-const temp = {
-  browser: undefined as undefined | Browser
-}
+// const temp = {
+//   browser: undefined as undefined | Browser
+// }
 
 
 export async function GET(request: NextRequest) {
@@ -23,15 +24,23 @@ export async function GET(request: NextRequest) {
   }
 
   const startBrowserStartTime = performance.now()
-  chromium.setGraphicsMode = false;
-  temp.browser = await (async () => temp.browser ? temp.browser : await puppeteer.launch({
+  // chromium.setGraphicsMode = false;
+  // temp.browser = await (async () => temp.browser ? temp.browser : await puppeteer.launch({
+  //   args: chromium.args,
+  //   defaultViewport: chromium.defaultViewport,
+  //   executablePath: await chromium.executablePath(
+  //     `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+  //   ),
+  //   headless: chromium.headless,
+  // }))()
+  const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(
       `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
     ),
     headless: chromium.headless,
-  }))()
+  })
   // const browser = await puppeteer.launch()
   const endBrowserStartTime = performance.now() // Get the end BrowserStartTime
   const executionBrowserStartTime = endBrowserStartTime - startBrowserStartTime // Calculate the difference
@@ -40,7 +49,7 @@ export async function GET(request: NextRequest) {
   let result
   try {
     result = await renderMermaid(
-      temp.browser as any,
+      browser as any,
       code,
       "svg",
       {
