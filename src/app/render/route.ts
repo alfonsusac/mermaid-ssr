@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         mermaidConfig: {
           htmlLabels: true,
           fontFamily: "var(--font-inter)",
-          themeCSS: "HELLO",
+          themeCSS: "HELLO YES",
           ...cfg
         },
         myCSS: ".mermaid-js{font-size: 0.8em !important;}",
