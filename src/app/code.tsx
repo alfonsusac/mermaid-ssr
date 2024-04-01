@@ -1,5 +1,5 @@
+import { cn } from "lazy-cn"
 import { codeToHtml } from "shiki"
-import { cn } from "tailwind-cn"
 
 export async function getCodeProps(
   code: string,
