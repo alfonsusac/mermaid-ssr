@@ -7,6 +7,41 @@
   min-width: 0;
 }
 
+body{
+  @apply bg-neutral-900 text-white/90
+}
+
+p {
+  @apply text-neutral-400
+}
+
 pre {
-  @apply p-2 bg-black/5
+  @apply p-4 bg-neutral-500/5 text-white/80 text-sm my-2 rounded-sm overflow-auto brightness-90
+}
+code {
+  @apply opacity-90
+}
+
+p code {
+  @apply text-sm px-1.5 py-1 rounded-md bg-white/10
+}
+
+main > section {
+  @apply mt-20
+}
+
+h2 {
+  @apply font-medium text-2xl tracking-tight my-4 mb-6
+}
+
+h3 {
+  @apply mt-4
+}
+h3 pre {
+  @apply p-0 inline text-xl tracking-tight rounded-lg bg-transparent
+}
+
+
+.params > section {
+  @apply mb-12 
 }

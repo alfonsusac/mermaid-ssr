@@ -44,8 +44,14 @@ export async function GET(request: NextRequest) {
         myCSS: ".mermaid-js{font-size: 0.8em !important;}",
       }
     )
-  } catch (error) {
-    return NextResponse.json({ status: "render failed" })
+  } catch (error: any) {
+    // console.log(error.stack)
+    const msg = error.message as string
+    const errormsg = msg.split('\n').slice(0,
+      msg.split('\n').findIndex(l => l.includes('@mermaid-js'))
+    ).join('\n')
+    console.log(errormsg)
+    return NextResponse.json({ status: errormsg })
   }
   const endRenderTime = performance.now() // Get the end RenderTime
   const executionRenderTime = endRenderTime - startRenderTime // Calculate the difference
