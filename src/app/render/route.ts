@@ -25,13 +25,7 @@ export async function GET(request: NextRequest) {
     if (error) return NextResponse.json({ status: "invalid config" })
   }
 
-  // const ev = [] as { name: string, time: number }[]
-  // let mark = performance.now()
-  // function logtime(name: string) {
-  //   ev.push({ name, time: _2dp(performance.now() - mark) })
-  //   mark = performance.now()
-  // }
-  const { ev, logtime, final } = createLogger() 
+  const { ev, logtime, final } = createLogger()
 
   const page = await initializePuppeteer(ev)
   if (!page) {
@@ -40,10 +34,14 @@ export async function GET(request: NextRequest) {
 
   logtime('puppeteer initialized')
   try {
-    const html = await renderCode(page, code, cfg)
+    const  result = await renderCode(page, code, cfg)
     logtime('code rendered')
-    final('Total time')
-    return NextResponse.json({ status: "ok", svg: html, ev })
+    if (result.error) {
+      return NextResponse.json({ status: result.error, ev })
+    } else {
+      final('Total time')
+      return NextResponse.json({ status: "ok", svg: result.svg, ev })
+    }
   } catch (error) {
     console.log(error)
     return NextResponse.json({ status: error, ev })
@@ -97,10 +95,6 @@ async function launchBrowser() {
 
   const browser = await puppeteer.launch(options) as Browser
 
-  // const browser = await puppeteer.launch()
-  // const endBrowserStartTime = performance.now() // Get the end BrowserStartTime
-  // const executionBrowserStartTime = endBrowserStartTime - startBrowserStartTime // Calculate the difference
-
   return browser as Browser
 }
 
@@ -125,8 +119,6 @@ async function initializePuppeteer(ev: any[]) {
       }
     })
     page.setDefaultTimeout(5000)
-    // console.log(getDomain() + '/mermaid.html')
-    // await page.goto(getDomain() + '/mermaid.html')
     await page.setContent(mermaidHTML)
     logtime("mermaid html loaded")
     await page.waitForSelector('#container')
@@ -145,23 +137,28 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
     await page.waitForSelector('#container', {
 
     }) // todo: can we remove this?
-    const text = await page.evaluate(async (code, cfg) => {
+    const result = await page.evaluate(async (code, cfg) => {
       const { mermaid } = globalThis as unknown as { mermaid: Mermaid }
 
       mermaid.initialize({ startOnLoad: false, ...cfg })
 
-      // const graphDefinition = 'graph TB\na-->b'
-      const { svg } = await mermaid.render('graphDiv', code)
-      return svg
+      try {
+        // const graphDefinition = 'graph TB\na-->b'
+        const { svg } = await mermaid.render('graphDiv', code)
+        return { svg }
+      } catch (error: any) {
+        console.log(error.message)
+        return { error: error.message }
+      }
     }, code, cfg)
-    console.log('end')
+    // console.log('end')
 
-    return text
+
+    return result
   } catch (error) {
     console.log(error)
+    return { error: "unknown error"}
   } finally {
     // await page.close()
   }
-
-  return 'nice'
 }
