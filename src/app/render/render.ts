@@ -1,5 +1,6 @@
 import { Mermaid } from "mermaid"
 import { Browser } from "puppeteer-core"
+import { getDomain } from "../url"
 
 export async function renderCode(
   browser: Browser
@@ -15,7 +16,7 @@ export async function renderCode(
   })
 
   try {
-    await page.goto('http://localhost:3010/mermaid.html')
+    await page.goto(getDomain() + '/mermaid.html')
     console.log("content set")
     // console.log(await page.content())
     // await page.$eval('#container', async () => {
