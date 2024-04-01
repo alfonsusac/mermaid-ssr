@@ -18,19 +18,6 @@ export async function renderCode(
   try {
     await page.goto(getDomain() + '/mermaid.html')
     console.log("content set")
-    // console.log(await page.content())
-    // await page.$eval('#container', async () => {
-    //   console.log("Container Found")
-    //   // const { mermaid } = globalThis as any
-    //   // console.log(mermaid)
-    // })
-    let x = false
-    await page.$eval('body', (body, backgroundColor) => {
-      body.style.background = backgroundColor
-      x = true
-    }, "red")
-
-    console.log("Here", x)
 
     await page.waitForSelector('#container')
     const text = await page.evaluate(async () => {
