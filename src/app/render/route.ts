@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(
       `https://github.com/Sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar`
-    ),
+    ), 
     headless: chromium.headless,
   })
   // const browser = await puppeteer.launch()
