@@ -103,6 +103,7 @@ async function initializePuppeteer() {
       }
     })
     page.setDefaultTimeout(5000)
+    console.log(getDomain() + '/mermaid.html')
     await page.goto(getDomain() + '/mermaid.html')
     await page.waitForSelector('#container')
     temp.page = page
