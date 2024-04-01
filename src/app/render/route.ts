@@ -1,6 +1,6 @@
 import { renderMermaid } from "@mermaid-js/mermaid-cli"
 import { NextRequest, NextResponse } from "next/server"
-import puppeteer, { Browser } from "puppeteer-core"
+import puppeteer, { Browser } from "puppeteer"
 import chromium from "@sparticuz/chromium-min"
 
 
