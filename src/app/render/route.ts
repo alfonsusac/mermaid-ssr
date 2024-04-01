@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import { renderCode } from "./render"
-import { Browser } from "puppeteer-core"
+import { Browser, Page } from "puppeteer-core"
+import { getDomain } from "../url"
+import { Mermaid } from "mermaid"
+
+const temp = {
+  page: undefined as Page | undefined
+}
+
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
@@ -13,16 +19,19 @@ export async function GET(request: NextRequest) {
     if (error) return NextResponse.json({ status: "invalid config" })
   }
 
-  const browser = await launchBrowser()
+  const page = await initializePuppeteer()
+  if (!page) {
+    return NextResponse.json({ status: "error initializing puppeteer" })
+  }
 
   try {
-    const html = await renderCode(browser)
+    const html = await renderCode(page)
     return NextResponse.json({ status: "ok", svg: html })
   } catch (error) {
     console.log(error)
     return NextResponse.json({ status: error })
   } finally {
-    browser.close()
+    // browser.close()
   }
 
 
@@ -118,4 +127,56 @@ async function launchBrowser() {
   // const executionBrowserStartTime = endBrowserStartTime - startBrowserStartTime // Calculate the difference
 
   return browser as Browser
+}
+
+async function initializePuppeteer() {
+  if (temp.page) {
+    console.log("Page already initialized")
+    return temp.page
+  }
+
+  try {
+    const browser = await launchBrowser()
+    const page = await browser.newPage()
+    page.on('console', async (msg) => {
+      const msgArgs = msg.args()
+      for (let i = 0; i < msgArgs.length; ++i) {
+        console.log(await msgArgs[i].jsonValue())
+      }
+    })
+    page.setDefaultTimeout(5000)
+    await page.goto(getDomain() + '/mermaid.html')
+    await page.waitForSelector('#container')
+    temp.page = page
+    console.log("Page initialized.")
+    return page
+  } catch (error: any) {
+    console.log("Error intializing puppeteer", error.message)
+    return
+  }
+}
+
+
+export async function renderCode(page: Page) {
+  try {
+    await page.waitForSelector('#container', {
+
+    }) // todo: can we remove this?
+    const text = await page.evaluate(async () => {
+      const { mermaid } = globalThis as unknown as { mermaid: Mermaid }
+
+      const graphDefinition = 'graph TB\na-->b'
+      const { svg } = await mermaid.render('graphDiv', graphDefinition)
+      return svg
+    })
+    console.log('end')
+
+    return text
+  } catch (error) {
+    console.log(error)
+  } finally {
+    // await page.close()
+  }
+
+  return 'nice'
 }
