@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { getDomain } from "./url"
 
 export function Playground() {
 
-  const [svg, setSvg] = useState("")
+  const [data, setData] = useState<any>()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState()
 
@@ -13,7 +14,7 @@ export function Playground() {
       <form className="mt-4 flex flex-col gap-2" action={
         (form) => {
           (async () => {
-            const url = new URL('https://mermaid-ssr.vercel.app/render')
+            const url = new URL(getDomain() + '/render')
             url.searchParams.set('code', form.get('code') as string)
             const config = {
               theme: "base",
@@ -36,10 +37,10 @@ export function Playground() {
             })
             const svg = data.svg
             setLoading(false)
+            setData(data)
             if (!svg) {
               setError(error ?? data.status)
             }
-            setSvg(svg)
           })()
         }
       }>
@@ -55,13 +56,26 @@ export function Playground() {
         />
         <button className="text-start p-2 px-6 bg-black/20 rounded-md self-start hover:bg-black/10">Submit</button>
       </form>
-      <div className="flex justify-center p-4 bg-neutral-950/20 my-8 rounded-xl min-h-40 items-center">
+      <div className="flex flex-col p-4 bg-neutral-950/20 my-8 rounded-xl min-h-40 items-center">
         {
           loading
             ? <div>Loading...</div>
             : error
               ? <div className="self-stretch grow text-xs text-start font-mono leading-tight tracking-tighter text-red-400 whitespace-pre-wrap">{error}</div>
-              : <div dangerouslySetInnerHTML={{ __html: svg }} />
+              : data
+                ? <>
+                  <div dangerouslySetInnerHTML={{ __html: data?.svg }} />
+                  <div className="self-stretch grow text-xs font-mono leading-tight tracking-tighter text-neutral-500">
+                    {
+                      data?.ev && data.ev.map(
+                        (e: { name: string, time: number }, i: number) => <div key={i}>
+                          {e.time}s - {e.name}
+                        </div>
+                      )
+                    }
+                  </div>
+                </>
+                : <div className="opacity-30 pointer-events-none">Press submit to generate diagram</div>
         }
       </div>
     </>

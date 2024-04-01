@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Browser, Page } from "puppeteer-core"
 import { getDomain } from "../url"
-import { Mermaid } from "mermaid"
+import { Mermaid, MermaidConfig } from "mermaid"
 // @ts-ignore
-import mermaidHTML from "./mermaid.html" 
+import mermaidHTML from "./mermaid.html"
+import { createLogger } from "./timer"
 
 const temp = {
   page: undefined as Page | undefined
 }
 
+function _2dp(num: number) {
+  return Math.round(num * 100) / 100000
+}
 
 export async function GET(request: NextRequest) {
-  // console.log(mermaidHTML)
-
   const code = request.nextUrl.searchParams.get('code')
   if (!code) return NextResponse.json({ status: "no code provided" })
   const backgroundColor = request.nextUrl.searchParams.get('b')
@@ -23,17 +25,28 @@ export async function GET(request: NextRequest) {
     if (error) return NextResponse.json({ status: "invalid config" })
   }
 
-  const page = await initializePuppeteer()
+  // const ev = [] as { name: string, time: number }[]
+  // let mark = performance.now()
+  // function logtime(name: string) {
+  //   ev.push({ name, time: _2dp(performance.now() - mark) })
+  //   mark = performance.now()
+  // }
+  const { ev, logtime, final } = createLogger() 
+
+  const page = await initializePuppeteer(ev)
   if (!page) {
     return NextResponse.json({ status: "error initializing puppeteer" })
   }
 
+  logtime('puppeteer initialized')
   try {
-    const html = await renderCode(page)
-    return NextResponse.json({ status: "ok", svg: html })
+    const html = await renderCode(page, code, cfg)
+    logtime('code rendered')
+    final('Total time')
+    return NextResponse.json({ status: "ok", svg: html, ev })
   } catch (error) {
     console.log(error)
-    return NextResponse.json({ status: error })
+    return NextResponse.json({ status: error, ev })
   } finally {
     // browser.close()
   }
@@ -91,15 +104,20 @@ async function launchBrowser() {
   return browser as Browser
 }
 
-async function initializePuppeteer() {
+async function initializePuppeteer(ev: any[]) {
+  const { logtime } = createLogger("┌ ", ev)
+
   if (temp.page) {
     console.log("Page already initialized")
+    logtime("browser already launched")
     return temp.page
   }
 
   try {
     const browser = await launchBrowser()
+    logtime("new browser launched")
     const page = await browser.newPage()
+    logtime("new page launched")
     page.on('console', async (msg) => {
       const msgArgs = msg.args()
       for (let i = 0; i < msgArgs.length; ++i) {
@@ -109,7 +127,8 @@ async function initializePuppeteer() {
     page.setDefaultTimeout(5000)
     // console.log(getDomain() + '/mermaid.html')
     // await page.goto(getDomain() + '/mermaid.html')
-    page.setContent(mermaidHTML)
+    await page.setContent(mermaidHTML)
+    logtime("mermaid html loaded")
     await page.waitForSelector('#container')
     temp.page = page
     console.log("Page initialized.")
@@ -121,18 +140,20 @@ async function initializePuppeteer() {
 }
 
 
-async function renderCode(page: Page) {
+async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
   try {
     await page.waitForSelector('#container', {
 
     }) // todo: can we remove this?
-    const text = await page.evaluate(async () => {
+    const text = await page.evaluate(async (code, cfg) => {
       const { mermaid } = globalThis as unknown as { mermaid: Mermaid }
 
-      const graphDefinition = 'graph TB\na-->b'
-      const { svg } = await mermaid.render('graphDiv', graphDefinition)
+      mermaid.initialize({ startOnLoad: false, ...cfg })
+
+      // const graphDefinition = 'graph TB\na-->b'
+      const { svg } = await mermaid.render('graphDiv', code)
       return svg
-    })
+    }, code, cfg)
     console.log('end')
 
     return text
