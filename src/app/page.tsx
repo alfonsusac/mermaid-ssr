@@ -1,8 +1,7 @@
-import Image from "next/image"
-import { CodeBlock, getCodeProps } from "./code"
+import { CodeBlock } from "./code"
 import { Playground } from "./client"
 
-export default async function Home({ searchParams }: any) {
+export default function Home() {
   return (
     <main className="max-w-screen-sm mx-auto p-8 py-20">
       <header className="text-center">

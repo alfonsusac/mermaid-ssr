@@ -1,6 +1,8 @@
 import { renderMermaid } from "@mermaid-js/mermaid-cli"
 import { NextRequest, NextResponse } from "next/server"
-import puppeteer, { Browser } from "puppeteer"
+import puppeteer, { Browser } from "puppeteer-core"
+import chromium from "@sparticuz/chromium-min"
+
 
 const temp = {
   browser: undefined as undefined | Browser
@@ -21,7 +23,15 @@ export async function GET(request: NextRequest) {
   }
 
   const startBrowserStartTime = performance.now()
-  temp.browser = await (async () => temp.browser ? temp.browser : await puppeteer.launch())()
+  chromium.setGraphicsMode = false;
+  temp.browser = await (async () => temp.browser ? temp.browser : await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(
+      `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+    ),
+    headless: chromium.headless,
+  }))()
   // const browser = await puppeteer.launch()
   const endBrowserStartTime = performance.now() // Get the end BrowserStartTime
   const executionBrowserStartTime = endBrowserStartTime - startBrowserStartTime // Calculate the difference
