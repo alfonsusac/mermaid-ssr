@@ -62,14 +62,15 @@ async function launchBrowser() {
   let options = {} as PuppeteerLaunchOptions
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     // chrome.setGraphicsMode = false // DONT disable or it wont work
+    chrome.setHeadlessMode = true
     options = {
       // ignoreDefaultArgs: [
       //   "--disable-extensions",
-      //   // "--hide-scrollbars",
-      //   // "--enable-automation",
-      //   // "--disable-setuid-sandbox",
-      //   // "--no-first-run",
-      //   // "--no-zygote",
+      //   "--hide-scrollbars",
+      //   "--enable-automation",
+      //   "--disable-setuid-sandbox",
+      //   "--no-first-run",
+      //   "--no-zygote",
       // ],
       args: [
         ...chrome.args,
@@ -79,7 +80,7 @@ async function launchBrowser() {
       ],
       defaultViewport: chrome.defaultViewport,
       executablePath: await chrome.executablePath(),
-      // headless: true,
+      headless: chrome.headless,
       ignoreHTTPSErrors: true,
       dumpio: true
     }
