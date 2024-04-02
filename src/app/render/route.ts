@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
   logtime('puppeteer initialized')
   try {
-    const  result = await renderCode(page, code, cfg)
+    const result = await renderCode(page, code, cfg)
     logtime('code rendered')
     if (result.error) {
       return NextResponse.json({ status: result.error, ev })
@@ -54,7 +54,8 @@ let chrome = {} as any
 let puppeteer: any
 
 if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  chrome = require("@sparticuz/chromium")
+  // chrome = require("@sparticuz/chromium")
+  chrome = require("@sparticuz/chromium-min")
   puppeteer = require("puppeteer-core")
 } else {
   puppeteer = require("puppeteer")
@@ -76,7 +77,10 @@ async function launchBrowser() {
     options = {
       args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
       defaultViewport: chrome.defaultViewport,
-      executablePath: await chrome.executablePath(),
+      // executablePath: await chrome.executablePath(),
+      executablePath: await chrome.executablePath(
+        `https://github.com/Sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar`
+      ),
       ignoreHTTPSErrors: true,
       dumpio: true,
     }
@@ -139,7 +143,7 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
 
       mermaid.initialize({
         startOnLoad: false,
-        
+
         ...cfg
       })
 
@@ -157,7 +161,7 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
     return result
   } catch (error) {
     console.log(error)
-    return { error: "unknown error"}
+    return { error: "unknown error" }
   } finally {
     // await page.close()
   }
