@@ -80,7 +80,7 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
         <div className="text-xl">
           Deploy your own
         </div>
-        <a href="https://github.com/alfonsusac/mermaid-ssr">
+        <a href="https://github.com/alfonsusac/mermaid-ssr" className="hover:underline underline-offset-4">
           GitHub
         </a>
       </footer>
