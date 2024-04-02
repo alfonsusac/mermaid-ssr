@@ -7,17 +7,15 @@ export default function Home() {
     <main className="max-w-screen-sm mx-auto p-8 py-20">
       <header className="text-center">
         <h1 className="font-semibold text-3xl tracking-tight">Mermaid SSR API</h1>
-        <div>Render SVG from mermaid input</div>
+        <div>Render SVG from mermaid.js input</div>
         <CodeBlock className="mt-8 *:text-base">
           {`await fetch('${getDomain()}/render')`}
         </CodeBlock>
       </header>
 
-
-
       <section>
-        <h2 className="mb-2">Usage</h2>
-        <p className="">Using to generate server-side rendered mermaid.js code to React</p>
+        <h2 className="mb-2">Example</h2>
+        <p className="">Generate server-side rendered mermaid.js code to React</p>
         <CodeBlock>
           {`const url = new URL('${getDomain()}/render')
 url.searchParams.set('code', \`graph TD;
@@ -25,7 +23,7 @@ url.searchParams.set('code', \`graph TD;
   A-->C;
   B-->D;
   C-->D;\`)
-const response = await fetch(url, { cache: 'no-store' })
+const response = await fetch(url)
 const result = await response.json()
 const svg = result.svg
 return <div dangerouslySetInnerHTML: { __html: svg }/>
@@ -35,6 +33,7 @@ return <div dangerouslySetInnerHTML: { __html: svg }/>
 
       <section className="params">
         <h2>Parameters</h2>
+        <p className="">All parameters are passed into the searchParams of the URL</p>
 
         <section>
           <div>
@@ -53,7 +52,7 @@ return <div dangerouslySetInnerHTML: { __html: svg }/>
         </section>
 
         <h3><CodeBlock>let cfg: MermaidConfig</CodeBlock></h3>
-        <p>The mermaid config. This follows <a href="https://mermaid.js.org/config/schema-docs/config.html" className="text-white/800 underline underline-offset-2">MermaidConfig</a> from mermaid.js</p>
+        <p>The mermaid config. This follows <a href="https://mermaid.js.org/config/schema-docs/config.html" className="text-white/800 underline underline-offset-2" target="_blank">MermaidConfig</a> from mermaid.js</p>
         <CodeBlock>
           {`const config = {
   theme: "base",
@@ -73,6 +72,7 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
 
       <section>
         <h2 className="mb-2">Playground</h2>
+        <p>You can find examples of mermaid code <a href="https://mermaid.js.org/intro/" className="text-white/800 underline underline-offset-2" target="_blank">here</a></p>
         <Playground />
       </section>
 
@@ -80,10 +80,10 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
         <div className="text-xl">
           Deploy your own
         </div>
-        <a href="https://github.com/alfonsusac/mermaid-ssr" className="hover:underline underline-offset-4">
+        <a href="https://github.com/alfonsusac/mermaid-ssr" className="hover:underline underline-offset-4" target="_blank">
           👉 GitHub 👈
         </a>
-        <a href="https://alfonsusardani.notion.site/Making-Mermaid-SSR-7ca677a55ea1405899bdc8937310e689" className="hover:underline underline-offset-4">
+        <a href="https://alfonsusardani.notion.site/Making-Mermaid-SSR-7ca677a55ea1405899bdc8937310e689" className="hover:underline underline-offset-4" target="_blank">
           Notes/attributions (Notion)
         </a>
         <div className="text-neutral-400">
