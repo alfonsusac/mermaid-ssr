@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
 
   const { ev, logtime, final } = createLogger()
   try {
-
     // const result = await unstable_cache(async (code, cfg) => {
     const page = await initializePuppeteer(ev)
     if (!page) {
@@ -64,20 +63,7 @@ async function launchBrowser() {
     // chrome.setGraphicsMode = false // DONT disable or it wont work
     chrome.setHeadlessMode = true
     options = {
-      // ignoreDefaultArgs: [
-      //   "--disable-extensions",
-      //   "--hide-scrollbars",
-      //   "--enable-automation",
-      //   "--disable-setuid-sandbox",
-      //   "--no-first-run",
-      //   "--no-zygote",
-      // ],
-      args: [
-        ...chrome.args,
-        // "--no-sandbox",
-        "--hide-scrollbars",
-        "--disable-web-security"
-      ],
+      args: chrome.args,
       defaultViewport: chrome.defaultViewport,
       executablePath: await chrome.executablePath(),
       headless: chrome.headless,
@@ -133,15 +119,12 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
 
     mermaid.initialize({
       startOnLoad: false,
-
       ...cfg
     })
 
     try {
       // const graphDefinition = 'graph TB\na-->b'
       const { svg } = await mermaid.render('graphDiv', code)
-
-
       return { svg }
     } catch (error: any) {
       console.log(error.message)
@@ -152,6 +135,5 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
   if (result.error) {
     throw result.error
   }
-
   return result.svg
 }
