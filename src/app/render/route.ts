@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
   const { ev, logtime, final } = createLogger()
   try {
-    // const result = await unstable_cache(async (code, cfg) => {
+    const result = await unstable_cache(async (code, cfg) => {
     const page = await initializePuppeteer(ev)
     if (!page) {
       throw new Error("Error intiializing puppeteer")
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
     const result = await renderCode(page, code, cfg)
 
     logtime('code rendered')
-    //   return result
-    // })(code, cfg)
+      return result
+    })(code, cfg)
 
     final('Total time')
     return NextResponse.json({ ev, status: "ok", svg: result, })
