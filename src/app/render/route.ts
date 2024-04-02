@@ -26,34 +26,23 @@ export async function GET(request: NextRequest) {
   const { ev, logtime, final } = createLogger()
   try {
 
-    const result = await unstable_cache(async (code, cfg) => {
-      const page = await initializePuppeteer(ev)
-      if (!page) {
-        throw new Error("Error intiializing puppeteer")
-      }
-      logtime('puppeteer initialized')
-      const result = await renderCode(page, code, cfg)
+    // const result = await unstable_cache(async (code, cfg) => {
+    const page = await initializePuppeteer(ev)
+    if (!page) {
+      throw new Error("Error intiializing puppeteer")
+    }
+    logtime('puppeteer initialized')
+    const result = await renderCode(page, code, cfg)
 
-      // const encoder = new TextEncoder()
-      // const encodedString = encoder.encode(result)
-      // console.log(encodedString.length)
-
-      // const buffer = Buffer.from(result as any, 'utf-8')
-      // console.log(buffer.length)
-
-      // const base64 = Buffer.from(buffer.toString('ascii'), 'ascii')
-      // console.log(base64.length)
-
-      logtime('code rendered')
-      return result
-    })(code, cfg)
+    logtime('code rendered')
+    //   return result
+    // })(code, cfg)
 
     final('Total time')
     return NextResponse.json({ ev, status: "ok", svg: result, })
   } catch (error) {
     console.log(error)
     return NextResponse.json({ ev, status: error, })
-  } finally {
   }
 }
 
