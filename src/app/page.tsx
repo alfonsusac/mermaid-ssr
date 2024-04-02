@@ -1,5 +1,6 @@
 import { CodeBlock } from "./code"
 import { Playground } from "./client"
+import { getDomain } from "./url"
 
 export default function Home() {
   return (
@@ -8,7 +9,7 @@ export default function Home() {
         <h1 className="font-semibold text-3xl tracking-tight">Mermaid SSR API</h1>
         <div>Render SVG from mermaid input</div>
         <CodeBlock className="mt-8 *:text-base">
-          {"await fetch('https://mermaid-ssr.vercel.app/render')"}
+          {`await fetch('${getDomain()}/render')`}
         </CodeBlock>
       </header>
 
@@ -18,7 +19,7 @@ export default function Home() {
         <h2 className="mb-2">Usage</h2>
         <p className="">Using to generate server-side rendered mermaid.js code to React</p>
         <CodeBlock>
-          {`const url = new URL('http://mermaid-ssr.vercel.app/render')
+          {`const url = new URL('${getDomain()}/render')
 url.searchParams.set('code', \`graph TD;
   A-->B;
   A-->C;
@@ -75,8 +76,13 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
         <Playground />
       </section>
 
-      <footer className="flex justify-center h-20 items-center">
-        GitHub
+      <footer className="flex flex-col gap-2 justify-center h-20 items-center">
+        <div className="text-xl">
+          Deploy your own
+        </div>
+        <a href="https://github.com/alfonsusac/mermaid-ssr">
+          GitHub
+        </a>
       </footer>
 
     </main>
