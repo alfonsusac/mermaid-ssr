@@ -29,28 +29,31 @@ export async function GET(request: NextRequest) {
     const result = await unstable_cache(async (code, cfg) => {
       const page = await initializePuppeteer(ev)
       if (!page) {
-        return { error: "Error intiializing puppeteer" }
+        throw new Error("Error intiializing puppeteer")
       }
       logtime('puppeteer initialized')
       const result = await renderCode(page, code, cfg)
+
+      // const encoder = new TextEncoder()
+      // const encodedString = encoder.encode(result)
+      // console.log(encodedString.length)
+
+      // const buffer = Buffer.from(result as any, 'utf-8')
+      // console.log(buffer.length)
+
+      // const base64 = Buffer.from(buffer.toString('ascii'), 'ascii')
+      // console.log(base64.length)
+
       logtime('code rendered')
       return result
     })(code, cfg)
 
-    if (result.error) {
-      return NextResponse.json({ ev, status: result.error, })
-    } else {
-      final('Total time')
-      return NextResponse.json({ ev, status: "ok", svg: result.svg, })
-    }
+    final('Total time')
+    return NextResponse.json({ ev, status: "ok", svg: result, })
   } catch (error) {
     console.log(error)
     return NextResponse.json({ ev, status: error, })
   } finally {
-    // await temp.page?.close()
-    // temp.page = undefined
-    // await temp.browser?.close()
-    // temp.browser = undefined
   }
 }
 
@@ -155,18 +158,23 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
       try {
         // const graphDefinition = 'graph TB\na-->b'
         const { svg } = await mermaid.render('graphDiv', code)
+
+
         return { svg }
       } catch (error: any) {
         console.log(error.message)
-        return { error: error.message }
+        return { error }
       }
     }, code, cfg)
 
+    if (result.error) {
+      throw result.error
+    }
 
-    return result
+    return result.svg
   } catch (error) {
     console.log(error)
-    return { error: "unknown error" }
+    throw error
   } finally {
     // await page.close()
   }
