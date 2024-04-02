@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { Browser, Page } from "puppeteer-core"
+import { Browser, Page, PuppeteerLaunchOptions } from "puppeteer-core"
 import { getDomain } from "../url"
 import { Mermaid, MermaidConfig } from "mermaid"
 // @ts-ignore
@@ -7,13 +7,13 @@ import mermaidHTML from "./mermaid.html"
 import { createLogger } from "./timer"
 
 const temp = {
+  browser: undefined as Browser | undefined,
   page: undefined as Page | undefined
 }
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
   if (!code) return NextResponse.json({ status: "no code provided" })
-  const backgroundColor = request.nextUrl.searchParams.get('b')
   let cfg
   try {
     cfg = JSON.parse(request.nextUrl.searchParams.get('cfg') ?? "{}")
@@ -28,22 +28,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ status: "error initializing puppeteer" })
   }
 
-
   logtime('puppeteer initialized')
   try {
     const result = await renderCode(page, code, cfg)
     logtime('code rendered')
     if (result.error) {
-      return NextResponse.json({ status: result.error, ev })
+      return NextResponse.json({ ev, status: result.error, })
     } else {
       final('Total time')
-      return NextResponse.json({ status: "ok", svg: result.svg, ev })
+      return NextResponse.json({ ev, status: "ok", svg: result.svg, })
     }
   } catch (error) {
     console.log(error)
-    return NextResponse.json({ status: error, ev })
+    return NextResponse.json({ ev, status: error, })
   } finally {
-    // browser.close()
+    await temp.page?.close()
+    temp.page = undefined
+    await temp.browser?.close()
+    temp.browser = undefined
   }
 }
 
@@ -62,40 +64,38 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
 }
 
 async function launchBrowser() {
-  // const startBrowserStartTime = performance.now()
-  // chromium.setGraphicsMode = false;
-  // temp.browser = await (async () => temp.browser ? temp.browser : await puppeteer.launch({
-  //   args: chromium.args,
-  //   defaultViewport: chromium.defaultViewport,
-  //   executablePath: await chromium.executablePath(
-  //     `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
-  //   ),
-  //   headless: chromium.headless,
-  // }))()
-  let options = {}
+  
+  let options = {} as PuppeteerLaunchOptions
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    chrome.setGraphicsMode = false;
     options = {
-      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+      ignoreDefaultArgs: [
+        "--disable-extensions",
+        "--hide-scrollbars",
+        "--enable-automation",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-setuid-sandbox",
+        "--no-first-run",
+        "--no-sandbox",
+        "--no-zygote",
+      ],
+      args: [
+        ...chrome.args,
+        "--no-sandbox",
+        "--hide-scrollbars",
+        "--disable-web-security"
+      ],
       defaultViewport: chrome.defaultViewport,
-      // executablePath: await chrome.executablePath(),
-      executablePath: await chrome.executablePath(
-        `https://github.com/Sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar`
-      ),
+      executablePath: await chrome.executablePath(),
+      headless: true,
       ignoreHTTPSErrors: true,
-      dumpio: true,
+      dumpio: true
     }
-    // options = {
-    //   args: chromium.args,
-    //   defaultViewport: chromium.defaultViewport,
-    //   executablePath: await chromium.executablePath(
-    //     `https://github.com/Sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar`
-    //   ),
-    //   headless: chromium.headless,
-    // }
   }
 
   const browser = await puppeteer.launch(options) as Browser
-
+  temp.browser = browser
   return browser as Browser
 }
 
@@ -120,9 +120,10 @@ async function initializePuppeteer(ev: any[]) {
       }
     })
     page.setDefaultTimeout(5000)
-    await page.setContent(mermaidHTML)
+    await page.setContent(mermaidHTML, {
+      waitUntil: 'domcontentloaded',
+    })
     logtime("mermaid html loaded")
-    await page.waitForSelector('#container')
     temp.page = page
     console.log("Page initialized.")
     return page
