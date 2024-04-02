@@ -10,10 +10,6 @@ const temp = {
   page: undefined as Page | undefined
 }
 
-function _2dp(num: number) {
-  return Math.round(num * 100) / 100000
-}
-
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
   if (!code) return NextResponse.json({ status: "no code provided" })
@@ -31,6 +27,7 @@ export async function GET(request: NextRequest) {
   if (!page) {
     return NextResponse.json({ status: "error initializing puppeteer" })
   }
+
 
   logtime('puppeteer initialized')
   try {
@@ -140,7 +137,11 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
     const result = await page.evaluate(async (code, cfg) => {
       const { mermaid } = globalThis as unknown as { mermaid: Mermaid }
 
-      mermaid.initialize({ startOnLoad: false, ...cfg })
+      mermaid.initialize({
+        startOnLoad: false,
+        
+        ...cfg
+      })
 
       try {
         // const graphDefinition = 'graph TB\na-->b'
@@ -151,7 +152,6 @@ async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
         return { error: error.message }
       }
     }, code, cfg)
-    // console.log('end')
 
 
     return result

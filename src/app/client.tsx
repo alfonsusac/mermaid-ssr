@@ -56,7 +56,7 @@ export function Playground() {
         />
         <button className="text-start p-2 px-6 bg-black/20 rounded-md self-start hover:bg-black/10">Submit</button>
       </form>
-      <div className="flex flex-col p-4 bg-neutral-950/20 my-8 rounded-xl min-h-40 items-center">
+      <div className="flex flex-col justify-center gap-4 p-4 bg-neutral-950/20 my-8 rounded-xl min-h-40 items-center">
         {
           loading
             ? <div>Loading...</div>
@@ -64,7 +64,7 @@ export function Playground() {
               ? <div className="self-stretch grow text-xs text-start font-mono leading-tight tracking-tighter text-red-400 whitespace-pre-wrap">{error}</div>
               : data
                 ? <>
-                  <div dangerouslySetInnerHTML={{ __html: data?.svg }} />
+                  <div className="self-stretch" dangerouslySetInnerHTML={{ __html: data?.svg }} />
                   <div className="self-stretch grow text-xs font-mono leading-tight tracking-tighter text-neutral-500">
                     {
                       data?.ev && data.ev.map(
