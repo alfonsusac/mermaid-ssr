@@ -76,14 +76,14 @@ async function launchBrowser() {
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     chrome.setGraphicsMode = false
     options = {
-      ignoreDefaultArgs: [
-        "--disable-extensions",
-        // "--hide-scrollbars",
-        // "--enable-automation",
-        // "--disable-setuid-sandbox",
-        // "--no-first-run",
-        // "--no-zygote",
-      ],
+      // ignoreDefaultArgs: [
+      //   "--disable-extensions",
+      //   // "--hide-scrollbars",
+      //   // "--enable-automation",
+      //   // "--disable-setuid-sandbox",
+      //   // "--no-first-run",
+      //   // "--no-zygote",
+      // ],
       args: [
         ...chrome.args,
         // "--no-sandbox",
@@ -92,7 +92,7 @@ async function launchBrowser() {
       ],
       defaultViewport: chrome.defaultViewport,
       executablePath: await chrome.executablePath(),
-      headless: true,
+      // headless: true,
       ignoreHTTPSErrors: true,
       dumpio: true
     }
