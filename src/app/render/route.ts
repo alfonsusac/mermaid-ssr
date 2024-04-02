@@ -81,7 +81,7 @@ async function launchBrowser() {
         "--hide-scrollbars",
         "--enable-automation",
         "--disable-gpu",
-        "--disable-dev-shm-usage",
+        // "--disable-dev-shm-usage",
         "--disable-setuid-sandbox",
         "--no-first-run",
         // "--no-sandbox",
