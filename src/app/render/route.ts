@@ -84,12 +84,12 @@ async function launchBrowser() {
         "--disable-dev-shm-usage",
         "--disable-setuid-sandbox",
         "--no-first-run",
-        "--no-sandbox",
+        // "--no-sandbox",
         "--no-zygote",
       ],
       args: [
         ...chrome.args,
-        "--no-sandbox",
+        // "--no-sandbox",
         "--hide-scrollbars",
         "--disable-web-security"
       ],
