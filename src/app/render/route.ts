@@ -21,8 +21,6 @@ export async function GET(request: NextRequest) {
     if (error) return NextResponse.json({ status: "invalid config" })
   }
 
-
-
   const { ev, logtime, final } = createLogger()
   try {
 
@@ -63,7 +61,7 @@ async function launchBrowser() {
 
   let options = {} as PuppeteerLaunchOptions
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    // chrome.setGraphicsMode = false
+    // chrome.setGraphicsMode = false // DONT disable or it wont work
     options = {
       // ignoreDefaultArgs: [
       //   "--disable-extensions",
@@ -122,46 +120,37 @@ async function initializePuppeteer(ev: any[]) {
     return page
   } catch (error: any) {
     console.log("Error intializing puppeteer", error.message)
-    return
+    throw new Error(error.message)
   }
 }
 
 
 async function renderCode(page: Page, code: string, cfg: MermaidConfig) {
-  try {
-    await page.waitForSelector('#container', {
+  await page.waitForSelector('#container') // todo: can we remove this?
+  const result = await page.evaluate(async (code, cfg) => {
+    const { mermaid } = globalThis as unknown as { mermaid: Mermaid }
 
-    }) // todo: can we remove this?
-    const result = await page.evaluate(async (code, cfg) => {
-      const { mermaid } = globalThis as unknown as { mermaid: Mermaid }
+    mermaid.initialize({
+      startOnLoad: false,
 
-      mermaid.initialize({
-        startOnLoad: false,
+      ...cfg
+    })
 
-        ...cfg
-      })
-
-      try {
-        // const graphDefinition = 'graph TB\na-->b'
-        const { svg } = await mermaid.render('graphDiv', code)
+    try {
+      // const graphDefinition = 'graph TB\na-->b'
+      const { svg } = await mermaid.render('graphDiv', code)
 
 
-        return { svg }
-      } catch (error: any) {
-        console.log(error.message)
-        return { error }
-      }
-    }, code, cfg)
-
-    if (result.error) {
-      throw result.error
+      return { svg }
+    } catch (error: any) {
+      console.log(error.message)
+      return { error: error.message }
     }
+  }, code, cfg)
 
-    return result.svg
-  } catch (error) {
-    console.log(error)
-    throw error
-  } finally {
-    // await page.close()
+  if (result.error) {
+    throw result.error
   }
+
+  return result.svg
 }
