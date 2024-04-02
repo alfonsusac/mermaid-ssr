@@ -74,7 +74,7 @@ async function launchBrowser() {
 
   let options = {} as PuppeteerLaunchOptions
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    chrome.setGraphicsMode = false
+    // chrome.setGraphicsMode = false
     options = {
       // ignoreDefaultArgs: [
       //   "--disable-extensions",
