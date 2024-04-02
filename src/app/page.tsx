@@ -76,13 +76,16 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
         <Playground />
       </section>
 
-      <footer className="flex flex-col gap-2 justify-center h-20 items-center">
+      <footer className="flex flex-col gap-2 justify-center py-8 items-center">
         <div className="text-xl">
           Deploy your own
         </div>
         <a href="https://github.com/alfonsusac/mermaid-ssr" className="hover:underline underline-offset-4">
           GitHub
         </a>
+        <div className="mt-20">
+          Made by alfonsusac
+        </div>
       </footer>
 
     </main>
