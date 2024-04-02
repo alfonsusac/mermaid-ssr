@@ -24,14 +24,14 @@ export async function GET(request: NextRequest) {
   const { ev, logtime, final } = createLogger()
   try {
     const result = await unstable_cache(async (code, cfg) => {
-    const page = await initializePuppeteer(ev)
-    if (!page) {
-      throw new Error("Error intiializing puppeteer")
-    }
-    logtime('puppeteer initialized')
-    const result = await renderCode(page, code, cfg)
+      const page = await initializePuppeteer(ev)
+      if (!page) {
+        throw new Error("Error intiializing puppeteer")
+      }
+      logtime('puppeteer initialized')
+      const result = await renderCode(page, code, cfg)
 
-    logtime('code rendered')
+      logtime('code rendered')
       return result
     })(code, cfg)
 
