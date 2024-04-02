@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Browser, Page, PuppeteerLaunchOptions } from "puppeteer-core"
-import { getDomain } from "../url"
 import { Mermaid, MermaidConfig } from "mermaid"
 // @ts-ignore
 import mermaidHTML from "./mermaid.html"
 import { createLogger } from "./timer"
+import { unstable_cache } from "next/cache"
 
 const temp = {
   browser: undefined as Browser | undefined,
@@ -21,17 +21,22 @@ export async function GET(request: NextRequest) {
     if (error) return NextResponse.json({ status: "invalid config" })
   }
 
+
+
   const { ev, logtime, final } = createLogger()
-
-  const page = await initializePuppeteer(ev)
-  if (!page) {
-    return NextResponse.json({ status: "error initializing puppeteer" })
-  }
-
-  logtime('puppeteer initialized')
   try {
-    const result = await renderCode(page, code, cfg)
-    logtime('code rendered')
+
+    const result = await unstable_cache(async (code, cfg) => {
+      const page = await initializePuppeteer(ev)
+      if (!page) {
+        return { error: "Error intiializing puppeteer" }
+      }
+      logtime('puppeteer initialized')
+      const result = await renderCode(page, code, cfg)
+      logtime('code rendered')
+      return result
+    })(code, cfg)
+
     if (result.error) {
       return NextResponse.json({ ev, status: result.error, })
     } else {
@@ -42,10 +47,10 @@ export async function GET(request: NextRequest) {
     console.log(error)
     return NextResponse.json({ ev, status: error, })
   } finally {
-    await temp.page?.close()
-    temp.page = undefined
-    await temp.browser?.close()
-    temp.browser = undefined
+    // await temp.page?.close()
+    // temp.page = undefined
+    // await temp.browser?.close()
+    // temp.browser = undefined
   }
 }
 
@@ -57,17 +62,16 @@ let puppeteer: any
 
 if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
   chrome = require("@sparticuz/chromium")
-  // chrome = require("@sparticuz/chromium-min")
   puppeteer = require("puppeteer-core")
 } else {
   puppeteer = require("puppeteer")
 }
 
 async function launchBrowser() {
-  
+
   let options = {} as PuppeteerLaunchOptions
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    chrome.setGraphicsMode = false;
+    chrome.setGraphicsMode = false
     options = {
       ignoreDefaultArgs: [
         "--disable-extensions",
