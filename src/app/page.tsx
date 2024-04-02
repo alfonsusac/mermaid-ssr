@@ -81,9 +81,12 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
           Deploy your own
         </div>
         <a href="https://github.com/alfonsusac/mermaid-ssr" className="hover:underline underline-offset-4">
-          GitHub
+          👉 GitHub 👈
         </a>
-        <div className="mt-20">
+        <a href="https://alfonsusardani.notion.site/Making-Mermaid-SSR-7ca677a55ea1405899bdc8937310e689" className="hover:underline underline-offset-4">
+          Notes/attributions (Notion)
+        </a>
+        <div className="text-neutral-400">
           Made by alfonsusac
         </div>
       </footer>
