@@ -78,14 +78,11 @@ async function launchBrowser() {
     options = {
       ignoreDefaultArgs: [
         "--disable-extensions",
-        "--hide-scrollbars",
-        "--enable-automation",
-        // "--disable-gpu",
-        // "--disable-dev-shm-usage",
-        "--disable-setuid-sandbox",
-        "--no-first-run",
-        // "--no-sandbox",
-        "--no-zygote",
+        // "--hide-scrollbars",
+        // "--enable-automation",
+        // "--disable-setuid-sandbox",
+        // "--no-first-run",
+        // "--no-zygote",
       ],
       args: [
         ...chrome.args,
