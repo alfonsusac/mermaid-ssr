@@ -21,3 +21,5 @@ export function createLogger(prefix?: string, _ev?: { name: string, time: number
 function _2dp(num: number) {
   return Math.round(num * 100) / 100000
 }
+
+export type Logger = ReturnType<typeof createLogger>

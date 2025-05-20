@@ -1,5 +1,5 @@
 import { CodeBlock } from "./code"
-import { Playground } from "./client"
+import { Playground } from "./playground"
 import { getDomain } from "./url"
 
 export default function Home() {
@@ -9,15 +9,15 @@ export default function Home() {
         <h1 className="font-semibold text-3xl tracking-tight">Mermaid SSR API</h1>
         <div>Render SVG from mermaid.js input</div>
         <CodeBlock className="mt-8 *:text-base">
-          {`await fetch('${getDomain()}/render')`}
+          {`await fetch('${ getDomain() }/render')`}
         </CodeBlock>
       </header>
 
       <section>
-        <h2 className="mb-2">Example</h2>
-        <p className="">Generate server-side rendered mermaid.js code to React</p>
+        <h2>Example</h2>
+        <p>Generate server-side rendered mermaid.js code to React</p>
         <CodeBlock>
-          {`const url = new URL('${getDomain()}/render')
+          {`const url = new URL('${ getDomain() }/render')
 url.searchParams.set('code', \`graph TD;
   A-->B;
   A-->C;
@@ -26,18 +26,18 @@ url.searchParams.set('code', \`graph TD;
 const response = await fetch(url)
 const result = await response.json()
 const svg = result.svg
-return <div dangerouslySetInnerHTML: { __html: svg }/>
+
+return <div dangerouslySetInnerHTML={ __html: svg }/>
 `}
         </CodeBlock>
       </section>
 
       <section className="params">
         <h2>Parameters</h2>
-        <p className="">All parameters are passed into the searchParams of the URL</p>
-
+        <p>All parameters are passed into the searchParams of the URL</p>
         <section>
           <div>
-            <h3><CodeBlock>let code: String</CodeBlock></h3>
+            <h3><CodeBlock>let code: string</CodeBlock></h3>
             <p>The mermaid code</p>
           </div>
           <div>
@@ -51,10 +51,11 @@ return <div dangerouslySetInnerHTML: { __html: svg }/>
           </div>
         </section>
 
-        <h3><CodeBlock>let cfg: MermaidConfig</CodeBlock></h3>
-        <p>The mermaid config. This follows <a href="https://mermaid.js.org/config/schema-docs/config.html" className="text-white/800 underline underline-offset-2" target="_blank">MermaidConfig</a> from mermaid.js</p>
-        <CodeBlock>
-          {`const config = {
+        <section>
+          <h3><CodeBlock>let cfg: MermaidConfig</CodeBlock></h3>
+          <p>The mermaid config. This follows <a href="https://mermaid.js.org/config/schema-docs/config.html" className="text-white/800 underline underline-offset-2" target="_blank">MermaidConfig</a> from mermaid.js</p>
+          <CodeBlock>
+            {`const config = {
   theme: "base",
   themeVariables: {
     darkMode: true,
@@ -66,8 +67,36 @@ return <div dangerouslySetInnerHTML: { __html: svg }/>
   },
 }
 url.searchParams.set('cfg', JSON.stringify(config))`}
-        </CodeBlock>
+          </CodeBlock>
+        </section>
 
+
+        <section>
+          <h3><CodeBlock>let img: boolean</CodeBlock></h3>
+          <p>Set to true to return an image instead of SVG. This will return a PNG image instead of SVG</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Return</h2>
+        <p>The response is a JSON object with the following properties:</p>
+        <CodeBlock>{`type Response = 
+  | {
+    status: "ok"
+    svg: string //"<svg>...</svg>"
+    ev: {
+      name: string
+      time: number
+    }[]
+  } | {
+    status: Error
+    ev: {
+      name: string
+      time: number
+    }[]
+  }
+`}
+        </CodeBlock>
       </section>
 
       <section>

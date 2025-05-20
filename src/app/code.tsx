@@ -6,10 +6,9 @@ export async function getCodeProps(
   language?: string,
   className?: string,
 ) {
-
   const __html = await codeToHtml(code, {
     lang: language ?? "tsx",
-    theme: "catppuccin-macchiato",
+    theme: "github-dark-dimmed",
     transformers: [{
       pre: (pre) => {
         const style = pre.properties.style?.toString()
@@ -25,7 +24,6 @@ export async function getCodeProps(
       }
     }]
   })
-  // console.log(__html)
   return {
     dangerouslySetInnerHTML: { __html }
   }

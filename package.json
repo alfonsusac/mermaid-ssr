@@ -9,30 +9,30 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mermaid-js/mermaid-cli": "^10.8.0",
+    "@mermaid-js/mermaid-cli": "^10.9.1",
     "lazy-cn": "^1.0.0",
-    "mermaid": "^10.9.0",
-    "next": "14.1.4",
-    "puppeteer": "^19.8.0",
-    "puppeteer-core": "^22.6.1",
+    "mermaid": "^10.9.3",
+    "next": "15.3.2",
+    "puppeteer": "^24.9.0",
+    "puppeteer-core": "^22.15.0",
     "puppeteer-serverless": "^2.0.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "shiki": "^1.2.2"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "shiki": "^1.29.2"
   },
   "devDependencies": {
-    "@sparticuz/chromium": "^123.0.0",
-    "@sparticuz/chromium-min": "^123.0.0",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
+    "@sparticuz/chromium": "^123.0.1",
+    "@sparticuz/chromium-min": "^123.0.1",
+    "@types/node": "^20.17.48",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.27.0",
     "eslint-config-next": "14.1.4",
-    "postcss": "^8",
+    "postcss": "^8.5.3",
     "raw-loader": "^4.0.2",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

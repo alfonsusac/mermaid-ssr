@@ -31,7 +31,7 @@ main > section {
 }
 
 h2 {
-  @apply font-medium text-2xl tracking-tight my-4 mb-6
+  @apply font-medium text-2xl tracking-tight my-4 mb-2
 }
 
 h3 {
