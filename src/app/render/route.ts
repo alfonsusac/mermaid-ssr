@@ -9,8 +9,8 @@ import type { MermaidConfig } from "mermaid"
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
   if (!code) return NextResponse.json({ status: "no code provided" })
-  let cfg
-  let out
+  let cfg: MermaidConfig = {}
+  let out: string | null = null
   try {
     cfg = JSON.parse(request.nextUrl.searchParams.get('cfg') ?? "{}")
     out = request.nextUrl.searchParams.get('out')
@@ -21,19 +21,27 @@ export async function GET(request: NextRequest) {
   const logger = createLogger()
 
   try {
-    const page = await initializePuppeteer(logger.ev)
+
+    const page = await initializePuppeteer(logger.ev, async (page) => {
+      await initializeMermaid(page, cfg)
+      logger.logtime('mermaid initialized')
+    })
     if (!page) throw new Error("Error intiializing puppeteer")
     logger.logtime('puppeteer initialized')
 
-    await initializeMermaid(page, cfg)
-    logger.logtime('mermaid initialized')
 
-    const { svg } = await renderCode(page, code) // later: unstable_cache this
-    logger.logtime('code rendered')
+    const { svg } = await unstable_cache(async () => {
+      const res = renderCode(page, code)
+      logger.logtime('code rendered')
+      return res
+    })() // later: unstable_cache this
 
     if (out === "html") {
-      const html = await renderSVGasHTML(page, svg)
-      logger.logtime('code rendered as html')
+      const html = await unstable_cache(async () => {
+        const res = await renderSVGasHTML(page, svg)
+        logger.logtime('code rendered as html')
+        return res
+      })()
       return new NextResponse(html, {
         status: 200,
         headers: {
@@ -42,8 +50,11 @@ export async function GET(request: NextRequest) {
       })
     }
     if (out === "png") {
-      const img = await renderSVGAsPNG(page, svg)
-      logger.logtime('code rendered as png')
+      const img = await unstable_cache(async () => {
+        const res = await renderSVGAsPNG(page, svg)
+        logger.logtime('code rendered as png')
+        return res
+      })()
       return new NextResponse(new Uint8Array(img), {
         status: 200,
         headers: {

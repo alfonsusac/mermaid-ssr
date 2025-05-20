@@ -27,9 +27,6 @@ export function Playground() {
       const data = await fetch(path).then(res => res.json())
       if (!data) throw new Error("No data returned")
 
-      // const svg = data.svg
-      // if (!svg) throw new Error(data.status)
-
       return {
         code,
         path,

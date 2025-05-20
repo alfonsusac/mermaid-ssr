@@ -47,7 +47,7 @@ export async function launchBrowser() {
 // @ts-ignore
 import mermaidHTML from "./mermaid.html"
 
-export async function initializePuppeteer(ev: any[]) {
+export async function initializePuppeteer(ev: any[], onLoad?: (page: Page) => Promise<void>) {
   const { logtime } = createLogger("┌ ", ev)
   if (temp.page) {
     console.log("Page already initialized")
@@ -75,6 +75,7 @@ export async function initializePuppeteer(ev: any[]) {
     logtime("mermaid html loaded")
     temp.page = page
     console.log("Page initialized.")
+    await onLoad?.(page)
     return page
   } catch (error) {
     if (error instanceof Error) {
