@@ -22,27 +22,25 @@ export async function GET(request: NextRequest) {
 
   try {
 
-    const page = await initializePuppeteer(logger.ev, async (page) => {
-      await initializeMermaid(page, cfg)
-      logger.logtime('mermaid initialized')
-    })
+    const page = await initializePuppeteer(logger.ev)
     if (!page) throw new Error("Error intiializing puppeteer")
     logger.logtime('puppeteer initialized')
 
+    await initializeMermaid(page, cfg)
+    logger.logtime('mermaid initialized')
 
-    const { svg } = await unstable_cache(async () => {
-      const res = renderCode(page, code)
+    const res = await unstable_cache(async () => {
+      const res = await renderCode(page, code)
       logger.logtime('code rendered')
-      return res
-    })() // later: unstable_cache this
+      if (out === "html")
+        return await renderSVGasHTML(page, res.svg)
+      if (out === "png")
+        return await renderSVGAsPNG(page, res.svg)
+      return res.svg
+    }, [code])() // later: unstable_cache this
 
     if (out === "html") {
-      const html = await unstable_cache(async () => {
-        const res = await renderSVGasHTML(page, svg)
-        logger.logtime('code rendered as html')
-        return res
-      })()
-      return new NextResponse(html, {
+      return new NextResponse(res as string, {
         status: 200,
         headers: {
           'Content-Type': 'text/html',
@@ -50,12 +48,7 @@ export async function GET(request: NextRequest) {
       })
     }
     if (out === "png") {
-      const img = await unstable_cache(async () => {
-        const res = await renderSVGAsPNG(page, svg)
-        logger.logtime('code rendered as png')
-        return res
-      })()
-      return new NextResponse(new Uint8Array(img), {
+      return new NextResponse(new Uint8Array(res as Buffer), {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
@@ -64,7 +57,7 @@ export async function GET(request: NextRequest) {
     }
 
     logger.final('Total time')
-    return NextResponse.json({ ev: logger.ev, status: "ok", svg })
+    return NextResponse.json({ ev: logger.ev, status: "ok", svg: res as string })
 
   } catch (error) {
     console.log("route.ts", error)
