@@ -7,7 +7,7 @@ export function Playground() {
 
   const [data, setData] = useState<any>()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState()
+  const [error, setError] = useState<string>()
 
   return (
     <>
@@ -30,11 +30,13 @@ export function Playground() {
             url.searchParams.set('cfg', JSON.stringify(config))
             setLoading(true)
             setError(undefined)
-            const data = await fetch(url).then(res => res.json()).catch(err => {
+            const result = url.pathname + url.search + url.hash;
+            const data = await fetch(result).then(res => res.json()).catch(err => {
               setLoading(false)
-              setError("Unknown client error" as any)
-              return {}
+              setError(String(err)  || "Unknown client error." + "The browser console may have more information.")
+              return undefined
             })
+            if (!data) return
             const svg = data.svg
             setLoading(false)
             setData(data)
@@ -61,7 +63,7 @@ export function Playground() {
           loading
             ? <div>Loading...</div>
             : error
-              ? <div className="self-stretch grow text-xs text-start font-mono leading-tight tracking-tighter text-red-400 whitespace-pre-wrap">{error}</div>
+              ? <div className="self-stretch grow text-xs text-start font-mono leading-tight tracking-tighter text-red-400 whitespace-pre-wrap">{String(error)}</div>
               : data
                 ? <>
                   <div className="self-stretch" dangerouslySetInnerHTML={{ __html: data?.svg }} />
