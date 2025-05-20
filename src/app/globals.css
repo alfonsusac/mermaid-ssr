@@ -16,7 +16,7 @@ p {
 }
 
 pre {
-  @apply p-4 bg-neutral-500/5 text-white/80 text-sm my-2 rounded-sm overflow-auto brightness-90
+  @apply p-4 bg-neutral-500/5 text-white/80 text-sm my-4 rounded-sm overflow-auto brightness-90
 }
 code {
   @apply opacity-90

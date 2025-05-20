@@ -52,7 +52,7 @@ return <div dangerouslySetInnerHTML={ __html: svg }/>
         </section>
 
         <section>
-          <h3><CodeBlock>let cfg: MermaidConfig</CodeBlock></h3>
+          <h3><CodeBlock>let cfg?: MermaidConfig</CodeBlock></h3>
           <p>The mermaid config. This follows <a href="https://mermaid.js.org/config/schema-docs/config.html" className="text-white/800 underline underline-offset-2" target="_blank">MermaidConfig</a> from mermaid.js</p>
           <CodeBlock>
             {`const config = {
@@ -72,15 +72,18 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
 
 
         <section>
-          <h3><CodeBlock>let img: boolean</CodeBlock></h3>
-          <p>Set to true to return an image instead of SVG. This will return a PNG image instead of SVG</p>
+          <h3><CodeBlock>let out?: "png" | "html"</CodeBlock></h3>
+          <p>Output format. If not provided, the default is SVG</p>
+          <CodeBlock>
+            {`url.searchParams.set('out', 'png')`}
+          </CodeBlock>
         </section>
       </section>
 
       <section>
         <h2>Return</h2>
-        <p>The response is a JSON object with the following properties:</p>
-        <CodeBlock>{`type Response = 
+        <p>If `out` is not specified, the response is a JSON object with the following properties:</p>
+        <CodeBlock>{`type Response =
   | {
     status: "ok"
     svg: string //"<svg>...</svg>"
@@ -88,7 +91,8 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
       name: string
       time: number
     }[]
-  } | {
+  } 
+  | {
     status: Error
     ev: {
       name: string
