@@ -144,7 +144,7 @@ export async function renderSVGAsPNG(page: Page, svg: string) {
     // @ts-ignore
     element.style = 'background: transparent;'
   }, svg)
-  const element = await page.$('#result')
+  const element = await page.$('#result>svg')
   if (!element) throw new Error("Element #result > svg not found in puppeteer")
   const imgBuffer = await element.screenshot({ type: 'png', omitBackground: true })
   return imgBuffer
