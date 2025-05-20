@@ -142,10 +142,10 @@ export async function renderSVGAsPNG(page: Page, svg: string) {
     if (!element) throw new Error("Element #graphDiv not found in page.evaluate")
     element.innerHTML = svg
     // @ts-ignore
-    element.style = 'background: transparent; width: fit-content;'
+    element.style = 'background: transparent;'
   }, svg)
   const element = await page.$('#result')
-  if (!element) throw new Error("Element #result not found in puppeteer")
+  if (!element) throw new Error("Element #result > svg not found in puppeteer")
   const imgBuffer = await element.screenshot({ type: 'png', omitBackground: true })
   return imgBuffer
 }
@@ -156,7 +156,7 @@ export async function renderSVGasHTML(page: Page, svg: string) {
     if (!element) throw new Error("Element #result not found in page.evaluate")
     element.innerHTML = svg
     // @ts-ignore
-    element.style = 'background: transparent; width: fit-content;'
+    element.style = 'background: transparent;'
   }, svg)
   const html = await page.evaluate(() => document.documentElement.outerHTML)
   return html
