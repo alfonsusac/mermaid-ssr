@@ -23,6 +23,18 @@ export function Playground() {
     url.searchParams.set('cfg', JSON.stringify(config))
     const path = url.pathname + url.search + url.hash;
 
+    const spAsJSON = new URLSearchParams(url.search)
+    spAsJSON.set('out', 'json')
+    const pathAsJSON = url.pathname + '?' + spAsJSON.toString() + url.hash;
+
+    const spAsPNG = new URLSearchParams(url.search)
+    spAsPNG.set('out', 'png')
+    const pathAsPNG = url.pathname + '?' + spAsPNG.toString() + url.hash;
+
+    const spAsHTML = new URLSearchParams(url.search)
+    spAsHTML.set('out', 'html')
+    const pathAsHTML = url.pathname + '?' + spAsHTML.toString() + url.hash;
+
     try {
       const data = await fetch(path).then(res => res.json())
       if (!data) throw new Error("No data returned")
@@ -30,6 +42,9 @@ export function Playground() {
       return {
         code,
         path,
+        pathAsJSON,
+        pathAsPNG,
+        pathAsHTML,
         data,
         error: undefined
       } as const
@@ -38,6 +53,9 @@ export function Playground() {
       return {
         code,
         path,
+        pathAsJSON,
+        pathAsPNG,
+        pathAsHTML,
         data: undefined,
         error: (error instanceof Error ? error.message : "") || "Unknown client error." + "The browser console may have more information."
       } as const
@@ -92,7 +110,10 @@ export function Playground() {
                 )
               }
               <br />
-              url: <a href={res?.path} className="text-white/800 underline underline-offset-2" target="_blank">{res?.path}</a>
+              open in new tab:{' '}
+              <a href={res?.pathAsJSON} className="text-white/800 underline underline-offset-2" target="_blank">JSON</a>{' '}
+              <a href={res?.pathAsPNG} className="text-white/800 underline underline-offset-2" target="_blank">PNG</a>{' '}
+              <a href={res?.pathAsHTML} className="text-white/800 underline underline-offset-2" target="_blank">HTML</a>{' '}
             </div>
           </div>
         </div>
