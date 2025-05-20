@@ -76,10 +76,10 @@ export function Playground() {
         <div className="min-h-0">
           <div className="flex flex-col justify-center gap-4 p-4 bg-neutral-950/20 my-8 rounded-xl">
             {
-              res?.data.status !== "ok" &&
+              res?.data?.status !== "ok" &&
               <div className="self-stretch grow text-xs text-start font-mono leading-tight tracking-tighter text-red-400 whitespace-pre-wrap">
                 Server error occurred. Message from server:<br />
-                {JSON.stringify(res?.data.status)}
+                {JSON.stringify(res?.data?.status)}
               </div>
             }
             <div className="self-stretch" dangerouslySetInnerHTML={{ __html: res?.data?.svg }} />
