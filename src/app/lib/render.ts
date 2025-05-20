@@ -44,6 +44,7 @@ export async function launchBrowser() {
 // ----------------------
 // Initialize Puppeteer
 
+// @ts-ignore
 import mermaidHTML from "./mermaid.html"
 
 export async function initializePuppeteer(ev: any[]) {
@@ -139,6 +140,7 @@ export async function renderSVGAsPNG(page: Page, svg: string) {
     const element = document.querySelector('#result');
     if (!element) throw new Error("Element #graphDiv not found in page.evaluate")
     element.innerHTML = svg
+    // @ts-ignore
     element.style = 'background: transparent; width: fit-content;'
   }, svg)
   const element = await page.$('#result')
@@ -152,6 +154,7 @@ export async function renderSVGasHTML(page: Page, svg: string) {
     const element = document.querySelector('#result');
     if (!element) throw new Error("Element #result not found in page.evaluate")
     element.innerHTML = svg
+    // @ts-ignore
     element.style = 'background: transparent; width: fit-content;'
   }, svg)
   const html = await page.evaluate(() => document.documentElement.outerHTML)
