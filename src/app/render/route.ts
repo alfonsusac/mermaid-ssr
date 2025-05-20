@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       if (out === "png")
         return await renderSVGAsPNG(page, res.svg)
       return res.svg
-    }, [code])() // later: unstable_cache this
+    }, [code, out ?? "", JSON.stringify(cfg)])() // later: unstable_cache this
 
     if (out === "html") {
       return new NextResponse(res as string, {
