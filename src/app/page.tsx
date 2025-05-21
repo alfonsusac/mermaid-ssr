@@ -109,6 +109,13 @@ url.searchParams.set('cfg', JSON.stringify(config))`}
         <Playground />
       </section>
 
+      <section>
+        <h2>Deployment</h2>
+        <p>
+          Note on deploying on Vercel: This repository does not support Fluid Compute. Make sure to turn them off in the settings.
+        </p>
+      </section>
+
       <footer className="flex flex-col gap-2 justify-center py-8 items-center">
         <div className="text-xl">
           Deploy your own
