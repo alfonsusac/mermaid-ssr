@@ -35,9 +35,9 @@ export async function GET(request: NextRequest) {
       if (out === "html")
         return await renderSVGasHTML(page, res.svg)
       if (out === "png")
-        return await renderSVGAsPNG(page, res.svg)
+        return (await renderSVGAsPNG(page, res.svg)).toString('base64')
       return res.svg
-    }, [code, out ?? "", JSON.stringify(cfg)])() // later: unstable_cache this
+    }, [code, out ?? "", JSON.stringify(cfg)])()
 
     if (out === "html") {
       return new NextResponse(res as string, {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       })
     }
     if (out === "png") {
-      return new NextResponse(new Uint8Array(res as Buffer), {
+      return new NextResponse(new Uint8Array(Buffer.from(res, 'base64')), {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
